@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'   # Update to a more recent Node.js version
+          node-version: '18'   # Use a more recent LTS version
 
       - name: Install dependencies
         run: npm install
@@ -24,7 +24,7 @@ jobs:
         run: npm run build
 
       - name: Archive production build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: react-build
           path: build/
@@ -34,16 +34,16 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Download production build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: react-build
           path: build/
 
       - name: Copy build files to EC2 instance
-        uses: appleboy/scp-action@v0.1.4  # Corrected SCP action
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_IP }}
           username: ubuntu
