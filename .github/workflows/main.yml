@@ -15,15 +15,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'   # Specify the version of Node.js you want
+          node-version: '18'   # Update to a more recent Node.js version
 
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install
 
       - name: Build the React app
-        run: |
-          npm run build
+        run: npm run build
 
       - name: Archive production build
         uses: actions/upload-artifact@v2
@@ -45,21 +43,22 @@ jobs:
           path: build/
 
       - name: Copy build files to EC2 instance
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ secrets.EC2_IP }}           # Store EC2 public IP in GitHub Secrets
-          username: ubuntu                     # Replace with your EC2 username (ec2-user for Amazon Linux)
-          key: ${{ secrets.EC2_PRIVATE_KEY }}    # Store your EC2 private key in GitHub Secrets
-          port: 22
-          source: "./build/*"
-          target: "/usr/share/nginx/html"       # Path to Nginx HTML directory
-
-      - name: Restart Nginx on EC2
-        uses: appleboy/ssh-action@v0.1.0
+        uses: appleboy/scp-action@v0.1.4  # Corrected SCP action
         with:
           host: ${{ secrets.EC2_IP }}
-          username: ec2-user
+          username: ubuntu
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 22
+          source: "build/*"
+          target: "/var/www/react-app"
+
+      - name: Restart Nginx on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ubuntu
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
+            sudo mv /var/www/react-app/* /usr/share/nginx/html/
             sudo systemctl restart nginx
