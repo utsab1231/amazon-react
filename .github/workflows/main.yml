@@ -48,7 +48,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.EC2_IP }}           # Store EC2 public IP in GitHub Secrets
-          username: ec2-user                     # Replace with your EC2 username (ec2-user for Amazon Linux)
+          username: ubuntu                     # Replace with your EC2 username (ec2-user for Amazon Linux)
           key: ${{ secrets.EC2_PRIVATE_KEY }}    # Store your EC2 private key in GitHub Secrets
           port: 22
           source: "./build/*"
